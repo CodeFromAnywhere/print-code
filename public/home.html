@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Your Code</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .loading {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center">
+    <div class="container mx-auto px-4">
+        <h1 class="text-4xl font-bold text-center mb-8">Print Your Code</h1>
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <textarea id="urlInput" rows="5" class="w-full p-2 border rounded mb-4"
+                placeholder="Enter URLs, one per line"></textarea>
+            <button id="processButton" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                Process URLs
+            </button>
+            <div id="loading" class="loading mt-4">
+                <i class="fas fa-spinner fa-spin"></i> Processing...
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <button id="shareButton" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+                <i class="fab fa-twitter"></i> Share on Twitter
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const urlInput = document.getElementById('urlInput');
+        const processButton = document.getElementById('processButton');
+        const loading = document.getElementById('loading');
+        const shareButton = document.getElementById('shareButton');
+
+        // Load saved URLs from localStorage
+        urlInput.value = localStorage.getItem('savedUrls') || '';
+
+        processButton.addEventListener('click', () => {
+            loading.style.display = 'block';
+            const urls = urlInput.value.split('\n');
+            const validUrls = urls.filter(url => url.trim().startsWith('http'));
+            const encodedUrls = validUrls.map(url => encodeURIComponent(url));
+            const finalUrl = encodedUrls.join('/');
+
+            // Save URLs to localStorage
+            localStorage.setItem('savedUrls', urlInput.value);
+
+            setTimeout(() => {
+                loading.style.display = 'none';
+                if (finalUrl) {
+                    window.location.href = finalUrl;
+                } else {
+                    alert('No valid URLs found. Please enter at least one URL starting with http:// or https://');
+                }
+            }, 1000);
+        });
+
+        shareButton.addEventListener('click', () => {
+            const tweetText = encodeURIComponent("Check out this awesome tool to print your code!");
+            const tweetUrl = encodeURIComponent(window.location.href);
+            window.open(`https://twitter.com/intent/tweet?text=${tweetText}&url=${tweetUrl}`, '_blank');
+        });
+    </script>
+</body>
+
+</html>
